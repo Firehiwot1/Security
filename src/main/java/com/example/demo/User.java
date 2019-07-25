@@ -3,7 +3,7 @@ package com.example.demo;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import javax.persistence.*;
-
+import java.util.Collection;
 @Entity
 @Table(name="User_Data")
 public class User {
@@ -31,21 +31,21 @@ public class User {
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = JoinColumn(name = "role_id"))
+            inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Collection<Role> roles;
 
     public User() {
 
     }
 
-    public User(String email, String password, String firstName,
-                String lastName, boolean enabled, String username) {
+    public User(String email, String password, String firstName, String lastName, boolean enabled, String username) {
         this.setEmail(email);
         this.setPassword(password);
         this.setFirstName(firstName);
         this.setLastName(lastName);
         this.setEnabled(enabled);
         this.setUsername(username);
+
     }
 
     public long getId() {
@@ -69,8 +69,11 @@ public class User {
     }
 
     public void setPassword(String password) {
-        BCryptPasswordEncoder passwordEncoder= new BCryptPasswordEncoder();this.password = passwordEncoder.encode(password);
-    }
+        BCryptPasswordEncoder passwordEncoder=
+                new BCryptPasswordEncoder();
+        this.password=passwordEncoder.encode(password);
+
+        }
 
     public String getFirstName() {
         return firstName;
@@ -113,11 +116,3 @@ public class User {
     }
 }
 
-
-
-
-
-
-
-
-}

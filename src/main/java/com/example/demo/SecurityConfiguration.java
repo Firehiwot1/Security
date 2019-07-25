@@ -1,5 +1,6 @@
 package com.example.demo;
 
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,52 +14,58 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
 @EnableWebSecurity
-public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
-
-
+public class SecurityConfiguration extends WebSecurityConfigurerAdapter{
     @Bean
-    public static BCryptPasswordEncoder passwordEncoder() {
-
+    public static BCryptPasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder();
     }
+
     @Autowired
     private SSUserDetailsService userDetailsService;
+
     @Autowired
-    private UserRepository userRepository;
+    private UserRepository appUserRepository;
 
     @Override
-    public UserDetailsService usersDetailsServiceBean() throws
-    Exception{
-        return new SSUserDetailsService(userRepository); }
-
+    public UserDetailsService userDetailsServiceBean() throws Exception {
+        return new SSUserDetailsService(appUserRepository);
+    }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        //Restricts access to routes
         http
                 .authorizeRequests()
-                .antMatchers("/","h2-console/**").permitAll()
+                .antMatchers("/","/h2-console/**", "/register").permitAll()
+                .antMatchers("/")
+                .access("hasAnyAuthority('USER', 'ADMIN')")
                 .antMatchers("/admin").access("hasAuthority('ADMIN')")
                 .anyRequest().authenticated()
                 .and()
-                .formLogin().loginPage("/login").permitAll()
+                .formLogin()
+                .loginPage("/login").permitAll()
+
                 .and()
                 .logout()
-                .logoutRequestMatcher(
-                        new AntPathRequestMatcher("/logout"))
-                .logoutSuccessUrl("/login").permitAll().and().httpBasic();
+                .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
+                .logoutSuccessUrl("/login").permitAll()
+
+                .and()
+                .httpBasic();
+
+        http
+                .csrf().disable();
+
+        http
+                .headers().frameOptions().disable();
 
     }
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.inMemoryAuthentication().withUser("dave")
-                .password(passwordEncoder().encode("begreat"))
-                .authorities("ADMIN").and().withUser("user").password(passwordEncoder().encode("password")).authorities("USER");
-
+        auth.userDetailsService(userDetailsServiceBean()).passwordEncoder(passwordEncoder());
     }
 }
 
-
-
-
+//  auth.inMemoryAuthentication().withUser("dave")
+//                .password(passwordEncoder().encode("begreat"))
+//                .authorities("ADMIN").and().withUser("user").password(passwordEnc

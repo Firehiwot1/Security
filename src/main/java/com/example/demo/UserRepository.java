@@ -1,10 +1,14 @@
 package com.example.demo;
 
 
-import org.apache.catalina.User;
+
 import org.springframework.data.repository.CrudRepository;
 
 public interface UserRepository extends CrudRepository<User, Long> {
+
+    User findByEmail(String email);
+    Long countByEmail(String email);
+    Long countByUsername(String username);
     User findByUsername(String username);
 }
 
