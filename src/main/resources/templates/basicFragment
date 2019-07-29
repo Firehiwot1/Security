@@ -68,6 +68,14 @@
     </div>
 </th:block>
 
+<footer th:fragment="footer">
+        <div class="footer" align="center">
+            <hr/>
+            <span class="text-muted">&copy; 2019 Firehiwot</span>
+        </div>
+    </footer>
+
+
 
 <th:block th:fragment="scriptFragment">
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
@@ -84,9 +92,7 @@
 
 
 </th:block>
-<div th:fragment="footer">
-        <div class="footer">Copyright 2019</div>
-    </div>
+
 
 </body>
 </html>
